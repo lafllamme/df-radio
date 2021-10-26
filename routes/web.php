@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\AudioController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +22,9 @@ Route::get('/', function () {
 Route::get('test', function () {
     return view('test');
 });
+
+Route::post('audioData', [AudioController::class, 'getData']);
+
 
 Auth::routes();
 

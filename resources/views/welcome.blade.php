@@ -28,12 +28,13 @@
     <div class="container is-widescreen">
         <section class="section is-small">
             <div class="container">
-                <form action="">
+                <form action="{{url('audioData')}}" method="post">
+                    @csrf
                     <div class="notification is-info">
                         <div class="field">
                             <label class="label">Link</label>
                             <div class="control">
-                                <input class="input" type="text" placeholder="Enter Link">
+                                <input class="input" type="text" placeholder="Enter Link" name="link" required>
                             </div>
                         </div>
 
@@ -41,9 +42,9 @@
                             <label class="label">Language</label>
                             <div class="control">
                                 <div class="select">
-                                    <select>
-                                        <option>en-US</option>
-                                        <option>de-DE</option>
+                                    <select required name="language">
+                                        <option value="en-US">en-US</option>
+                                        <option value="de-DE">de-DE</option>
                                     </select>
                                 </div>
                             </div>
@@ -52,7 +53,7 @@
                         <div class="field">
                             <div class="file has-name is-fullwidth" id="file-js">
                                 <label class="file-label">
-                                    <input class="file-input" type="file" name="resume">
+                                    <input class="file-input" type="file" name="filename">
                                     <span class="file-cta">
                                         <span class="file-icon">
                                             <i class="fas fa-upload"></i>
@@ -71,7 +72,7 @@
                         <div class="field">
                             <div class="control">
                                 <label class="checkbox">
-                                    <input type="checkbox">
+                                    <input type="checkbox" onClick="checkStatus(this)">
                                     I agree to the <a href="#">terms and conditions</a>
                                 </label>
                             </div>
@@ -80,7 +81,7 @@
 
                         <div class="field is-grouped">
                             <div class="control">
-                                <button class="button is-link" id="checked">Submit</button>
+                                <button disabled class="button is-link" id="checked" type="submit">Submit</button>
                             </div>
                             <div class="control">
                                 <button class="button is-link is-danger" onclick="this.form.reset();">Cancel</button>
@@ -109,6 +110,13 @@
             const fileName = document.querySelector('#file-js .file-name');
             fileName.textContent = fileInput.files[0].name;
         }
+    }
+    checkStatus = (elem) => {
+        if (elem.checked == true)
+            document.getElementById("checked").disabled = false;
+        else
+            document.getElementById("checked").disabled = true;
+
     }
 </script>
 
