@@ -28,7 +28,7 @@
     <div class="container is-widescreen">
         <section class="section is-small">
             <div class="container">
-                <form action="{{url('audioData')}}" method="post">
+                <form action="{{route('postAudio')}}" method="post">
                     @csrf
                     <div class="notification is-info">
                         <div class="field">
@@ -90,6 +90,17 @@
                     </div>
                 </form>
             </div>
+
+            @if(empty($downloadLink))
+            <p>Data does not exist</p>
+            @else
+
+            <div class="notification">
+                <button class="delete" onclick="this.parentElement.style.display='none'"></button>
+                <a href="{{$downloadLink}}"> {{$downloadLink}}
+                </a>
+            </div>
+            @endif
         </section>
     </div>
 

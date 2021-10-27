@@ -23,7 +23,9 @@ Route::get('test', function () {
     return view('test');
 });
 
-Route::post('audioData', [AudioController::class, 'getData']);
+Route::post('audioData', [AudioController::class, 'transcribedText'])->name('postAudio');
+Route::get('audioData', [AudioController::class, 'getData'])->name('getAudio');
+
 
 
 Auth::routes();
