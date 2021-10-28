@@ -26,6 +26,7 @@
         "vue-template-compiler": "^2.6.12"
     },
     "dependencies": {
-        "@google-cloud/speech": "^4.9.0"
+        "@google-cloud/speech": "^4.9.0",
+        "material-icons": "^1.10.0"
     }
 }

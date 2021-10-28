@@ -32,18 +32,19 @@
                     @csrf
                     <div class="notification is-info">
                         <div class="field">
-                            <label class="label">Link</label>
+                            <label class="label">Transcribe File from URL (max 1. min)</label>
                             <div class="control">
-                                <input class="input" type="text" placeholder="Enter Link" name="link" required>
+                                <input class="input" type="text" placeholder="Enter a link" name="link" required>
                             </div>
                         </div>
 
                         <div class="field">
-                            <label class="label">Language</label>
+                            <label class="label">Choose Language</label>
                             <div class="control">
                                 <div class="select">
                                     <select required name="language">
                                         <option value="en-US">en-US</option>
+                                        <option value="de-DE">es-ES</option>
                                         <option value="de-DE">de-DE</option>
                                     </select>
                                 </div>
@@ -55,12 +56,10 @@
                                 <label class="file-label">
                                     <input class="file-input" type="file" name="filename">
                                     <span class="file-cta">
-                                        <span class="file-icon">
-                                            <i class="fas fa-upload"></i>
+                                        <span class="material-icons">
+                                            upload_file
                                         </span>
-                                        <span class="file-label">
-                                            Choose a file…
-                                        </span>
+                                        <span>Upload</span>
                                     </span>
                                     <span class="file-name">
                                         Filename
@@ -91,10 +90,38 @@
                 </form>
             </div>
 
-            @if(empty($downloadLink))
-            <p>Data does not exist, nothing to download</p>
-            @else
+            @if(!empty($apiData))
+            <div class="notification">
+                <button class="delete" onclick="this.parentElement.style.display='none'"></button>
+                <p> Trancript:{{$apiData['transcript']}}</p>
+                <br>
+                <p> Confidence:{{$apiData['confidence']}}</p>
+                <br>
+            </div>
 
+
+            <table class="table">
+                <tr>
+                    <th>Number</th>
+                    <th>Words</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                </tr>
+                @foreach($words as $word)
+                <tr>
+                    <td> {{ $loop->iteration }}
+                    </td>
+                    <td>{{$word}}</td>
+                    <td>{{$startTime[$loop->index]}}</td>
+                    <td>{{$endTime[$loop->index]}}</td>
+
+                </tr>
+                @endforeach
+                </tr>
+            </table>
+            @endif
+
+            @if(!empty($downloadLink))
             <div class="notification">
                 <button class="delete" onclick="this.parentElement.style.display='none'"></button>
                 <a href="{{$downloadLink}}"> {{$downloadLink}}
