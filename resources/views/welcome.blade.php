@@ -92,7 +92,7 @@
             </div>
 
             @if(empty($downloadLink))
-            <p>Data does not exist</p>
+            <p>Data does not exist, nothing to download</p>
             @else
 
             <div class="notification">
@@ -101,6 +101,8 @@
                 </a>
             </div>
             @endif
+
+
         </section>
     </div>
 

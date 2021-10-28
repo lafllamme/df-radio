@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers;
 
-
 use Illuminate\Http\Request;
 
-use Google\Cloud\Speech\V1\RecognitionConfig\AudioEncoding;
-use Google\Cloud\Speech\V1\RecognitionConfig;
-use Google\Cloud\Speech\V1\StreamingRecognitionConfig;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\Response;
-use Google\Cloud\Speech\V1\SpeechClient;
-
+use Google\Cloud\Speech\V1p1beta1\RecognitionAudio;
+use Google\Cloud\Speech\V1p1beta1\SpeechClient;
+use Google\Cloud\Speech\V1p1beta1\RecognitionConfig\AudioEncoding;
+use Google\Cloud\Speech\V1p1beta1\RecognitionConfig;
 
 class AudioController extends Controller
 {
@@ -31,29 +28,50 @@ class AudioController extends Controller
     public function transcribedText(Request $request)
     {
 
-        $recognitionConfig = new RecognitionConfig();
-        $recognitionConfig->setEncoding(AudioEncoding::FLAC);
-        $recognitionConfig->setSampleRateHertz(44100);
-        $recognitionConfig->setLanguageCode('en-US');
-        $config = new StreamingRecognitionConfig();
-        $config->setConfig($recognitionConfig);
-        $auth = Storage::disk('public')->get('auth.json');
-        $test = Storage::path('public/auth.json');
-        //dd(file_get_contents($test, true));
-        //dd(json_decode($auth));
-        //putenv('GOOGLE_APPLICATION_CREDENTIALS='.$auth);
         $speechClient = new SpeechClient([
             'credentials' => Storage::path('public/auth.json'),
         ]);
-        $file = Storage::disk('public')->get('test.flac');
+        try {
+            $encoding = AudioEncoding::FLAC;
+            $sampleRateHertz = 24000;
+            $languageCode = 'en-US';
+            $config = new RecognitionConfig();
+            $config->setEncoding($encoding);
+            $config->setSampleRateHertz($sampleRateHertz);
+            $config->setLanguageCode($languageCode);
+            $config->setEnableWordTimeOffsets(true);
 
+            $audio = new RecognitionAudio();
+            $fileStream = file_get_contents(Storage::path('public/c.flac'), 'r');
+            $audio->setContent($fileStream);
+            $response = $speechClient->recognize($config, $audio);
+            //dd($response);
 
-        // $audioResource = fopen('path/to/audio.flac', 'r');
+            foreach ($response->getResults() as $result) {
+                $alternatives = $result->getAlternatives();
+                $mostLikely = $alternatives[0];
+                $transcript = $mostLikely->getTranscript();
+                $confidence = $mostLikely->getConfidence();
+                //$words = $mostLikely->getWords();
+                //$word = [];
+                $i = 0;
+                foreach ($mostLikely->getWords() as $wordInfo) {
+                    $startTime = $wordInfo->getStartTime();
+                    $endTime = $wordInfo->getEndTime();
+                    $word['word'][] = $wordInfo->getWord();
+                    $word['startTime'][] = $startTime->serializeToJsonString();
+                    $word['endTime'][] = $endTime->serializeToJsonString();
+                }
+                $apiData['transcript'] = $transcript;
+                $apiData['confidence'] = $confidence;
+                $apiData['wordMetaData'] = $word;
+                dd($apiData);
 
-        $responses = $speechClient->recognizeAudioStream($config, $file);
+                return view('welcome', compact('apiData'));
+            }
+        } finally {
 
-        foreach ($responses as $element) {
-            dd($element);
+            $speechClient->close();
         }
     }
 }
